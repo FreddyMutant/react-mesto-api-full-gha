@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const validator = require("validator");
+const mongoose = require('mongoose');
+const { urlRegexpPattern } = require('../constants');
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -12,28 +12,26 @@ const cardSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator(value) {
-        return validator.isURL(value);
+      validator(v) {
+        return urlRegexpPattern.test(v);
       },
-      message: "Invalid URL format",
+      message: (props) => `${props.value} is not a valid url!`,
     },
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
+    ref: 'user',
     required: true,
-    ref: "user",
   },
-  likes: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      default: [],
-      ref: "user",
-    },
-  ],
+  likes: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'user',
+    default: [],
+  }],
   createdAt: {
     type: Date,
     default: Date.now,
   },
 });
 
-module.exports = mongoose.model("card", cardSchema);
+module.exports = mongoose.model('card', cardSchema);

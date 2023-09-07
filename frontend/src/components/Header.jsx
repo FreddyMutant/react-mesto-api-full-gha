@@ -1,34 +1,55 @@
-import React from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import React from 'react';
+import headerLogo from '../images/headerLogo.svg';
+import { Link, useLocation } from 'react-router-dom';
 
-const Header = ({ isLoggedIn, email, onSignOut }) => {
-  const location = useLocation();
-  const navigate = useNavigate();
+const Header = (props) => {
 
-  const path = location.pathname === "/sign-in" ? "/sign-up" : "/sign-in";
-  const linkName = location.pathname === "/sign-in" ? "Регистрация" : "Войти";
+    const location = useLocation();
 
-  return (
-    <header className="header">
-      <div onClick={() => navigate("/")} className="header__logo"></div>
-      <div className="header__buttons-wrapper">
-        {isLoggedIn ? (
-          <>
-            <p className="header__email">{email}</p>
-            <button onClick={onSignOut} className="header__button">
-              Выйти
-            </button>
-          </>
-        ) : (
-          <>
-            <Link to={path} className="header__link">
-              {linkName}
-            </Link>
-          </>
-        )}
-      </div>
-    </header>
-  );
+    const [menuBurgerActive, setMenuBurgerActive] = React.useState(false);
+
+    function handleOpenMenu() {
+        setMenuBurgerActive(!menuBurgerActive);
+    }
+
+    return (
+        <header className={props.loggedIn ? "header header_open" : "header"}>
+            <nav className="header__nav">
+                <div className="header__nav-wrapper">
+                    <a className="header__link" href="/" title="Mesto Russia">
+                        <img className="header__logo" src={headerLogo} alt="Логотип Место" />
+                    </a>
+                    {props.loggedIn && (
+                        <button
+                            className={menuBurgerActive ?
+                                "header__menu-burger header__menu-burger button-hover" : "header__menu-burger button-hover"}
+                            type="button"
+                            aria-label="Меню"
+                            onClick={handleOpenMenu}
+                        />
+                    )}
+                    {!props.loggedIn && (
+                        <>
+                            {location.pathname === '/sign-up' &&
+                                <Link to="/sign-in" className="header__button button-hover">Войти</Link>
+                            }
+                            {location.pathname === '/sign-in' &&
+                                <Link to="/sign-up" className="header__button button-hover">Регистрация</Link>
+                            }
+                        </>
+                    )}
+                </div>
+                {props.loggedIn && (
+                    <div className={menuBurgerActive ? "header__menu header__menu_open" : "header__menu"}>
+                        <p className="header__email">{props.email}</p>
+                        <a onClick={props.signOut} className="header__button header__button-logout button-hover">
+                            Выйти
+                        </a>
+                    </div>
+                )}
+            </nav>
+        </header>
+    );
 };
 
 export default Header;

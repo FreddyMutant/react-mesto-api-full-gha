@@ -1,7 +1,5 @@
 ![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=30&duration=3000&pause=50&color=498EF7&multiline=true&width=600&height=120&lines=%22Mesto%22+Project.;The+webite+with+cards+of+places;Where+you+can+add+your+own+one.)
 
-<p align="center"><img  src="./src/images/project.png" width=1000px hight=500px></p>
-
 ## **Сontent**
 
 1. Description

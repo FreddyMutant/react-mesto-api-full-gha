@@ -1,39 +1,42 @@
-import usePopupClose from "../hooks/usePopupClose";
+import React from "react";
+import Popup from "./Popup";
 
-function PopupWithForm({
-  name,
-  isOpen,
-  title,
-  onClose,
-  children,
-  onSubmit,
-  buttonText,
-}) {
-  usePopupClose(isOpen, onClose);
-
-  return (
-    <div className={`popup popup_type_${name} ${isOpen ? "popup_opened" : ""}`}>
-      <div className="popup__container">
-        <button
-          type="button"
-          className="popup__button-close"
-          onClick={onClose}
-        ></button>
-        <form
-          className={`form_${name} popup__form`}
-          name={`${name}-form`}
-          onSubmit={onSubmit}
+const PopupWithForm = (props) => {
+    return (
+        <Popup
+            className={[
+                props.popupOpen ? "popup popup_is-opened" : "popup",
+                `popup_${props.popupType}`,
+            ].join(" ")}
+            isOpen={true}
+            closeHandler={props.onClose}
         >
-          <div className="popup__header">{title}</div>
-          {children}
+            <div className={[
+                "popup__container", `popup__container_${props.popupType}`
+            ].join(' ')}>
+                <button
+                    className="popup__close-button button-hover"
+                    type="button" aria-label="Закрыть окно"
+                    onClick={props.onClose} />
+                <h2 className="popup__title">{props.popupTitle}</h2>
+                <form className={[
+                    "popup__form", `popup__form_${props.popupType}`
+                ].join(' ')}
+                    name={props.popupFormName}
+                    onSubmit={props.onSubmit}
+                    noValidate>
 
-          <button type="submit" className="popup__button-save">
-            Сохранить
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-}
-
-export { PopupWithForm };
+                    {props.children}
+                    <button className={["popup__submit", `popup__submit_${props.popupType}`, props.isValid ? '' : "popup__submit_disabled"
+                    ].join(' ')}
+                        type="submit"
+                        data-value={props.submitButtonText}>
+                        {props.isLoading ? props.loadingText : props.submitButtonText}
+                    </button>
+                </form>
+            </div>
+        </Popup >
+    );
+};
+PopupWithForm.defaultProps = { isValid: true };
+export default PopupWithForm;

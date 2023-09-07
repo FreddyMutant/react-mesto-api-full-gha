@@ -1,26 +1,36 @@
-import usePopupClose from "../hooks/usePopupClose";
-import onSuccessIcon from "../images/succes.svg";
-import onErrorIcon from "../images/error.svg";
+import React from "react";
+import Popup from "./Popup";
+import tooltipError from "../images/tooltip_error.svg";
+import tooltipSuccess from "../images/tooltip_succes.svg";
 
-export default function InfoTooltip({ tooltipIcon, title, isOpen, onClose }) {
-  usePopupClose(isOpen, onClose);
-  return (
-    <div className={`popup popup_type_tooltip ${isOpen ? "popup_opened" : ""}`}>
-      <div className="popup__container-tooltip">
-        <div className="popup__icon">
-          {tooltipIcon === "success" && (
-            <img src={onSuccessIcon} alt="успешно" />
-          )}
-          {tooltipIcon === "error" && <img src={onErrorIcon} alt="ошибка" />}
-        </div>
-        <p className="popup__title-tooltip">{title}</p>
+const InfoTooltip = (props) => {
+    const tooltipTypes = {
+        reg_success: { image: tooltipSuccess, text: "Вы успешно зарегистрировались!" },
+        error: { image: tooltipError, text: "Что-то пошло не так! Попробуйте ещё раз." }
+    };
 
-        <button
-          type="button"
-          className="popup__button-close"
-          onClick={onClose}
-        />
-      </div>
-    </div>
-  );
-}
+    return (
+        <Popup
+            className={props.popupOpen ? "popup popup_is-opened" : "popup"}
+            isOpen={true}
+            closeHandler={props.onClose}
+        >
+            <div
+                className="popup__container"
+            >
+                <button
+                    className="popup__close-button button-hover"
+                    type="button"
+                    aria-label="Закрыть окно"
+                    onClick={props.onClose}
+                />
+                <div className="popup__tooltip">
+                    <img className="popup__tooltip-image" src={tooltipTypes[props.type].image}
+                        alt={tooltipTypes[props.type].text} />
+                    <p className="popup__tooltip-text">{tooltipTypes[props.type].text}</p>
+                </div>
+            </div>
+        </Popup>);
+};
+
+export default InfoTooltip;

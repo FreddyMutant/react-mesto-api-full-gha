@@ -1,37 +1,78 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cookieParser = require('cookie-parser');
-const { errors } = require('celebrate');
-const rateLimit = require('express-rate-limit');
-const mainRouter = require('./routes');
-const errorsHandler = require('./middlewares/errorsHandler');
+require("dotenv").config();
+const { celebrate, Joi, errors } = require("celebrate");
+const express = require("express");
+const mongoose = require("mongoose");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+const errorHandler = require("./middlewares/error-handler");
+const usersRouter = require("./routes/users");
+const cardsRouter = require("./routes/cards");
+const { login, createUser } = require("./controllers/users");
+const auth = require("./middlewares/auth");
+const NotFoundError = require("./errors/not-found-error");
+const { urlRegexpPattern } = require("./constants");
+const { requestLogger, errorLogger } = require("./middlewares/logger");
 
 const { PORT = 3000 } = process.env;
-
 const app = express();
 
+app.use(cors());
+
+mongoose.connect("mongodb://127.0.0.1:27017/mestodb");
+
+app.use(helmet());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(requestLogger);
+
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  windowMs: 15 * 60 * 1000,
+  max: 100,
 });
-
-app.use(express.json());
-app.use(express.urlencoded());
-
-mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
-
-app.use(cookieParser());
 
 app.use(limiter);
 
-app.use(mainRouter);
+app.post(
+  "/signin",
+  celebrate({
+    body: Joi.object().keys({
+      email: Joi.string().required().email(),
+      password: Joi.string().required().min(3),
+    }),
+  }),
+  login
+);
+
+app.post(
+  "/signup",
+  celebrate({
+    body: Joi.object().keys({
+      email: Joi.string().required().email(),
+      password: Joi.string().required().min(3),
+      name: Joi.string().min(2).max(30),
+      about: Joi.string().min(2).max(30),
+      avatar: Joi.string().pattern(urlRegexpPattern),
+    }),
+  }),
+  createUser
+);
+
+app.use(auth);
+
+app.use(usersRouter);
+app.use(cardsRouter);
+
+app.use("*", (req, res, next) => {
+  next(new NotFoundError("Сервер не отвечает"));
+});
+
+app.use(errorLogger);
 
 app.use(errors());
-app.use(errorsHandler);
 
-app.listen(PORT, () => {
-  // eslint-disable-next-line no-console
-  console.log(`App listening on port ${PORT}`);
-});
+app.use(errorHandler);
+
+app.listen(PORT);

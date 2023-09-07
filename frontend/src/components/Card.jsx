@@ -1,60 +1,45 @@
-import React, { useContext } from "react";
-import { CurrentUserContext } from "../contexts/CurrentUserContext";
+import { CurrentUserContext } from '../contexts/CurrentUserContext';
+import React from 'react';
+const Card = (props) => {
 
-function Card({
-  link,
-  alt,
-  name,
-  count,
-  card,
-  onCardClick,
-  onCardLike,
-  onCardDelete,
-}) {
-  const currentUser = useContext(CurrentUserContext);
-  const isOwn = card.owner._id === currentUser._id;
-  const isLiked = card.likes.some((i) => i._id === currentUser._id);
+    const currentUser = React.useContext(CurrentUserContext);
 
-  const cardLikeButtonClassName = `grid-item__like ${
-    isLiked && "grid-item__like_active"
-  }`;
+    const { name, link, likes, owner } = props.card;
 
-  function handleClick() {
-    onCardClick(card);
-  }
 
-  function handleLikeClick() {
-    onCardLike(card);
-  }
+    const isLiked = likes.some(i => i === currentUser._id);
+    function handleClick() {
+        props.onCardClick(props.card);
+    }
+    function handleDeleteClick() {
+        props.onDeleteCard(props.card);
+    }
+    function handleLikeClick() {
+        props.onCardLike(props.card);
+    }
 
-  function handleDeleteClick() {
-    onCardDelete(card);
-  }
+    return (
+        <article className="card">
+            {owner === currentUser._id
+                && <button className="card__remove button-hover" type="button" aria-label="Удалить место"
+                    onClick={handleDeleteClick} />
+            }
+            <img src={`${link}`} alt={name} className="card__image" onClick={handleClick} />
 
-  return (
-    <li className="grid-item">
-      <img
-        src={link}
-        alt={alt}
-        className="grid-item__image"
-        onClick={handleClick}
-      />
-      <div className="grid-item__wrap">
-        <h3 className="grid-item__name">{name}</h3>
-        <div className="grid-item__like-container">
-          <button
-            type="button"
-            className={cardLikeButtonClassName}
-            onClick={handleLikeClick}
-            aria-label="Понравилось"
-          ></button>
-          <p className="grid-item__like-counter">{count}</p>
-        </div>
-      </div>
-      {isOwn && (
-        <button className="grid-item__delete-btn" onClick={handleDeleteClick} />
-      )}
-    </li>
-  );
-}
-export { Card };
+            <div className="card__info">
+                <h2 className="card__title">{name}</h2>
+                <div className="card__like-container">
+                    <button
+                        type="button"
+                        className={`card__like button-hover ${isLiked && "card__like_active button-hover"}`}
+                        aria-label="лайк"
+                        onClick={handleLikeClick}
+                    />
+                    <p className="card__like-counter">{likes.length}</p>
+                </div>
+            </div>
+        </article>
+    )
+};
+
+export default Card
