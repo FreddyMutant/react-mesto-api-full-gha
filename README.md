@@ -12,6 +12,6 @@
 
 IP 158.160.112.245
 
-Frontend https://...
+Frontend https://freddymutant.nomoredomainsicu.ru
 
-Backend https://...
+Backend https://api.freddymutant.nomoredomainsicu.ru
