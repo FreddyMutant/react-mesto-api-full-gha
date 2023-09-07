@@ -2,8 +2,13 @@
 
 # dependencies
 /node_modules
+<<<<<<< HEAD
 .node_modules
 /.node_modules
+=======
+/.node_modules
+.node_modules
+>>>>>>> 4df3d07cd74834410728f9d6851e01c742c7f524
 node_modules
 /.pnp
 .pnp.js
