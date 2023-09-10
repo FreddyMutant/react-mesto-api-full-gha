@@ -10,7 +10,7 @@
 
 ## Ссылки на проект
 
-IP 158.160.112.245
+IP 158.160.119.30
 
 Frontend https://freddymutant.nomoredomainsicu.ru
 
